@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Timer App</title>
+
+    <link rel="icon" href="data:,">
+
+</head>
+<body>
+    <h1>Timer</h1>
+    <p>Elapsed Time:<span id="elapsed-time">{{ time_passed }}</span></p>
+    <button onclick="toggleTimer()">Start/Stop</button>
+    <button onclick="resetTimer()">Reset</button>
+
+    <script>
+        var is_timer_running ={{is_timer_running|lower}};
+        console.log(is_timer_running);
+        function toggleTimer() {
+            event.preventDefault();
+            fetch('/toggle_timer', { method: 'POST' });
+            is_timer_running = !is_timer_running;
+        }
+
+        function updateTimePassed(){
+            if(is_timer_running){
+                fetch('/get_time_passed')
+                .then(response=>response.text())
+                .then(elapsedTime =>{
+                    document.getElementById('elapsed-time').textContent = elapsedTime;
+                });
+            }
+        }
+        function resetTimer() {
+            event.preventDefault();
+            fetch('/reset_timer', { method: 'POST' });
+            document.getElementById('elapsed-time').textContent="00:00";
+            location.reload();
+        }
+        setInterval(updateTimePassed,1000);
+    </script>
+</body>
+</html>
